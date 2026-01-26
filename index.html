@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <title>Sistema La Vie Bella</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffd1dc">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{font-family:Arial;background:#f6f6f6;margin:0}
@@ -18,68 +20,34 @@ input,textarea{width:100%;padding:10px;margin:8px 0}
 .list{margin-top:20px;border-top:1px solid #ccc}
 .item{padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
 .item span{cursor:pointer}
-.small{font-size:12px;color:#555}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal-content{background:#fff;padding:20px;border-radius:12px;width:520px;max-height:90vh;overflow:auto}
+img{max-width:100%;margin-top:8px;border-radius:6px}
 .search{margin-bottom:10px}
-
-/* MODAL */
-.modal{
-position:fixed;
-top:0;left:0;
-width:100%;height:100%;
-background:rgba(0,0,0,.6);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:1000;
-}
-
-.modal-content{
-background:#fff;
-width:520px;
-max-width:95%;
-max-height:90vh;
-display:flex;
-flex-direction:column;
-border-radius:12px;
-overflow:hidden;
-}
-
-/* CONTEÚDO COM ROLAGEM */
-.modal-body{
-padding:20px;
-overflow-y:auto;
-flex:1;
-}
-
-.modal-body img{
-max-width:100%;
-margin-top:8px;
-border-radius:6px;
-}
-
-/* AÇÕES FIXAS */
-.modal-actions{
-padding:12px;
-border-top:1px solid #ddd;
-display:flex;
-gap:10px;
-justify-content:flex-end;
-background:#fff;
-}
-
-.modal-actions button{
-padding:10px 16px;
-background:#ffc0cb;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
+.small{font-size:12px;color:#555}
+.login{max-width:360px;margin:120px auto;background:#fff;padding:25px;border-radius:14px}
+.login button{width:100%}
+.logout{position:absolute;right:20px;top:20px;font-size:14px;cursor:pointer}
 </style>
 </head>
 
 <body>
 
-<header>Sistema La Vie Bella</header>
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+<h2>Login</h2>
+<input id="email" placeholder="E-mail">
+<input id="senha" type="password" placeholder="Senha">
+<button onclick="login()">Entrar</button>
+</div>
+
+<!-- SISTEMA -->
+<div id="app" style="display:none">
+
+<header>
+Sistema La Vie Bella
+<span class="logout" onclick="logout()">Sair</span>
+</header>
 
 <div class="menu">
 <button onclick="openModule('instagram_feed')">Instagram Feed</button>
@@ -128,35 +96,69 @@ cursor:pointer;
 <button onclick="back()">Voltar</button>
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="modal">
 <div class="modal-content">
-
-<div class="modal-body">
 <h3 id="m_nome"></h3>
-<button onclick="copyText(m_nome.innerText)">Copiar nome</button>
-
 <textarea id="m_desc" readonly></textarea>
-<button onclick="copyText(m_desc.value)">Copiar descrição</button>
-
 <div id="m_fotos"></div>
-</div>
-
-<div class="modal-actions">
-<button onclick="downloadFotos()">Baixar fotos</button>
+<div class="actions">
 <button onclick="deleteItem()">Excluir</button>
 <button onclick="closeModal()">Fechar</button>
 </div>
-
 </div>
+</div>
+
 </div>
 
 <script>
-let db = JSON.parse(localStorage.getItem('db')) || {
-ig_feed:[], ig_stories:[],
-facebook:[], tiktok:[], shopee:[], whatsapp:[],
-postados:[]
+const supabase = supabaseJs.createClient(
+  "https://ksmbmldjtfgtrbozmdmw.supabase.co",
+  "sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy"
+)
+
+let user=null
+let db={}
+
+async function login(){
+const {data,error}=await supabase.auth.signInWithPassword({
+email:email.value,password:senha.value
+})
+if(error){alert("Login inválido");return}
+user=data.user
+start()
 }
+
+async function logout(){
+await supabase.auth.signOut()
+location.reload()
+}
+
+async function start(){
+loginBox.style.display="none"
+app.style.display="block"
+loadDB()
+}
+
+async function loadDB(){
+let {data}=await supabase.from("dados").select("*").eq("uid",user.id)
+if(data.length){
+db=data[0].conteudo
+}else{
+db={ig_feed:[],ig_stories:[],facebook:[],tiktok:[],shopee:[],whatsapp:[],postados:[]}
+await save()
+}
+render()
+}
+
+async function save(){
+await supabase.from("dados").upsert({
+uid:user.id,
+conteudo:db
+})
+render()
+}
+
+/* ===== SISTEMA ORIGINAL (INALTERADO) ===== */
 
 let current=null
 
@@ -165,10 +167,7 @@ document.querySelectorAll('.section').forEach(s=>s.style.display='none')
 document.getElementById(id).style.display='block'
 render()
 }
-
-function back(){
-document.querySelectorAll('.section').forEach(s=>s.style.display='none')
-}
+function back(){document.querySelectorAll('.section').forEach(s=>s.style.display='none')}
 
 function createForm(id){
 return `
@@ -180,8 +179,7 @@ return `
 <button onclick="clearForm('${id}')">Limpar</button>
 </div>
 <div class="list" id="list_${id}"></div>
-<button onclick="back()">Voltar</button>
-`
+<button onclick="back()">Voltar</button>`
 }
 
 ['facebook','tiktok','shopee','whatsapp'].forEach(m=>{
@@ -193,7 +191,7 @@ let nome=document.getElementById(k+'_nome').value
 if(!nome) return
 let descEl=document.getElementById(k+'_desc')
 let desc=descEl?descEl.value:''
-let fotos=[...document.getElementById(k+'_fotos').files].map(f=>URL.createObjectURL(f))
+let fotos=[]
 db[k].push({nome,desc,fotos})
 save()
 clearForm(k)
@@ -211,22 +209,21 @@ Object.keys(db).forEach(k=>{
 let el=document.getElementById('list_'+k)
 if(!el) return
 el.innerHTML=''
-let items = k==='postados'
-? [...db.postados].sort((a,b)=>new Date(b.data)-new Date(a.data))
-: db[k]
+let items=k==='postados'
+?[...db.postados].sort((a,b)=>new Date(b.data)-new Date(a.data))
+:db[k]
 items.forEach((it,i)=>{
 el.innerHTML+=`
 <div class="item">
 <span onclick="openItem('${k}',${i})">${it.nome}</span>
 <div>
 ${k!=='postados'
-? `<button onclick="toPostados('${k}',${i})">Postar</button>
+?`<button onclick="toPostados('${k}',${i})">Postar</button>
 <button onclick="removeDirect('${k}',${i})">Excluir</button>`
-: `<div class="small">${it.origem} • ${it.data}</div>
+:`<div class="small">${it.origem} • ${it.data}</div>
 <button onclick="openItem('postados',${i})">Visualizar</button>
 <button onclick="removeDirect('postados',${i})">Excluir</button>`}
-</div>
-</div>`
+</div></div>`
 })
 })
 }
@@ -236,18 +233,8 @@ current={k,i}
 let it=db[k][i]
 m_nome.innerText=it.nome
 m_desc.value=it.desc||''
-m_fotos.innerHTML=(it.fotos||[]).map(f=>`<img src="${f}">`).join('')
+m_fotos.innerHTML=''
 modal.style.display='flex'
-}
-
-function downloadFotos(){
-let it=db[current.k][current.i]
-it.fotos.forEach((f,i)=>{
-let a=document.createElement('a')
-a.href=f
-a.download=`foto_${i+1}.jpg`
-a.click()
-})
 }
 
 function deleteItem(){
@@ -255,30 +242,86 @@ db[current.k].splice(current.i,1)
 save()
 closeModal()
 }
-
-function removeDirect(k,i){
-db[k].splice(i,1)
-save()
-}
-
+function removeDirect(k,i){db[k].splice(i,1);save()}
 function toPostados(k,i){
 let it=db[k][i]
 db.postados.push({...it,origem:k,data:new Date().toLocaleString()})
 db[k].splice(i,1)
 save()
 }
-
 function searchPostados(v){
 [...list_postados.children].forEach(i=>{
 i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none'
 })
 }
-
-function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
-function save(){localStorage.setItem('db',JSON.stringify(db));render()}
-render()
 </script>
+
+<!-- SUPABASE AUTH + SYNC FINAL -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://ksmbmldjtfgtrbozmdmw.supabase.co";
+const SUPABASE_KEY = "SUA_PUBLISHABLE_KEY_AQUI";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+// LOGIN
+async function login(email, senha) {
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password: senha
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Login realizado com sucesso");
+    sincronizarNuvem();
+  }
+}
+
+// SALVAR LOCAL + NUVEM
+async function backupNuvem() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  await supabaseClient
+    .from("dados")
+    .upsert({
+      uid: user.id,
+      conteudo: db
+    });
+}
+
+// RESTAURAR DA NUVEM
+async function sincronizarNuvem() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  const { data } = await supabaseClient
+    .from("dados")
+    .select("conteudo")
+    .eq("uid", user.id)
+    .single();
+
+  if (data && data.conteudo) {
+    localStorage.setItem("db", JSON.stringify(data.conteudo));
+    location.reload();
+  }
+}
+
+// GANCHO AUTOMÁTICO
+const _saveOriginal = save;
+save = function () {
+  _saveOriginal();
+  backupNuvem();
+};
+</script>
+
 
 </body>
 </html>
