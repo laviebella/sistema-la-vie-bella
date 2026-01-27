@@ -1,9 +1,9 @@
 {
   "name": "Sistema La Vie Bella",
   "short_name": "La Vie Bella",
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffd1dc",
+  "background_color": "#ffffff",
   "theme_color": "#ffd1dc",
   "orientation": "portrait",
   "icons": [
