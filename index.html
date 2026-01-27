@@ -8,24 +8,100 @@
 <meta name="theme-color" content="#ffd1dc">
 
 <style>
-body{font-family:Arial;background:#f6f6f6;margin:0}
-header{background:#ffd1dc;padding:20px;text-align:center;font-size:22px;font-weight:bold}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:20px}
-.menu button{background:#ffc0cb;border:none;padding:20px;font-size:18px;border-radius:12px;cursor:pointer}
-.section{display:none;background:#fff;margin:20px;padding:20px;border-radius:12px}
-input,textarea{width:100%;padding:10px;margin:8px 0}
-.actions button{margin-right:10px;padding:10px 18px;background:#ffc0cb;border:none;border-radius:8px;cursor:pointer}
-.list{margin-top:20px;border-top:1px solid #ccc}
-.item{padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
-.item span{cursor:pointer}
-.small{font-size:12px;color:#555}
-.search{margin-bottom:10px}
+body{
+font-family:Arial;
+background:#f6f6f6;
+margin:0;
+}
+
+/* TOPO */
+header{
+background:#ffd1dc;
+padding:20px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+color:#000;
+}
+
+/* MENU PRINCIPAL */
+.menu{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+padding:20px;
+}
+
+.menu button{
+background:#ffc0cb;
+border:none;
+padding:20px;
+font-size:18px;
+border-radius:12px;
+cursor:pointer;
+color:#000; /* FORÇA TEXTO PRETO */
+}
+
+/* SEÇÕES */
+.section{
+display:none;
+background:#fff;
+margin:20px;
+padding:20px;
+border-radius:12px;
+}
+
+input, textarea{
+width:100%;
+padding:10px;
+margin:8px 0;
+}
+
+/* BOTÕES DE AÇÃO */
+.actions button{
+margin-right:10px;
+padding:10px 18px;
+background:#ffc0cb;
+border:none;
+border-radius:8px;
+cursor:pointer;
+color:#000; /* TEXTO PRETO */
+}
+
+/* LISTAS */
+.list{
+margin-top:20px;
+border-top:1px solid #ccc;
+}
+
+.item{
+padding:10px;
+border-bottom:1px solid #eee;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.item span{
+cursor:pointer;
+}
+
+.small{
+font-size:12px;
+color:#555;
+}
+
+.search{
+margin-bottom:10px;
+}
 
 /* MODAL */
 .modal{
 position:fixed;
-top:0;left:0;
-width:100%;height:100%;
+top:0;
+left:0;
+width:100%;
+height:100%;
 background:rgba(0,0,0,.6);
 display:none;
 align-items:center;
@@ -44,7 +120,7 @@ border-radius:12px;
 overflow:hidden;
 }
 
-/* CONTEÚDO COM ROLAGEM */
+/* CONTEÚDO MODAL */
 .modal-body{
 padding:20px;
 overflow-y:auto;
@@ -57,7 +133,7 @@ margin-top:8px;
 border-radius:6px;
 }
 
-/* AÇÕES FIXAS */
+/* BOTÕES MODAL */
 .modal-actions{
 padding:12px;
 border-top:1px solid #ddd;
@@ -73,6 +149,7 @@ background:#ffc0cb;
 border:none;
 border-radius:8px;
 cursor:pointer;
+color:#000; /* TEXTO PRETO */
 }
 </style>
 </head>
