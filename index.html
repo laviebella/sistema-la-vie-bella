@@ -266,10 +266,63 @@ return `
 ['facebook','tiktok','shopee','whatsapp'].forEach(m=>{
 document.getElementById(m+'_form').innerHTML=createForm(m)
 })
-function save(){localStorage.setItem('db',JSON.stringify(db));render()}
+
+function save(){
+localStorage.setItem('db',JSON.stringify(db));
+syncWithSupabase();   // <<< ÚNICA ADIÇÃO AQUI
+render()
+}
+
 function render(){/* igual ao seu */}
 render()
 </script>
 
+<!-- SUPABASE (APENAS ACRESCENTADO) -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://ksmbmldjtfgtrbozmdmw.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy'
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+)
+
+async function syncWithSupabase(){
+  await supabaseClient
+    .from('dados')
+    .upsert({ id: 1, conteudo: db })
+}
+
+async function loadFromSupabase(){
+  const { data } = await supabaseClient
+    .from('dados')
+    .select()
+    .eq('id', 1)
+    .single()
+
+  if(data && data.conteudo){
+    db = data.conteudo
+    localStorage.setItem('db', JSON.stringify(db))
+    render()
+  }
+}
+loadFromSupabase()
+
+supabaseClient
+  .channel('realtime-db')
+  .on(
+    'postgres_changes',
+    { event: 'UPDATE', schema: 'public', table: 'dados' },
+    payload => {
+      db = payload.new.conteudo
+      localStorage.setItem('db', JSON.stringify(db))
+      render()
+    }
+  )
+  .subscribe()
+</script>
+
 </body>
 </html>
+
