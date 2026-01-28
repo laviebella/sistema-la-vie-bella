@@ -271,8 +271,9 @@ document.getElementById(m+'_form').innerHTML=createForm(m)
 })
 
 function save(){
-localStorage.setItem('db',JSON.stringify(db))
-render()
+  localStorage.setItem('db', JSON.stringify(db));
+  // syncWithSupabase(); ← DESATIVADO
+  render();
 }
 
 function render(){ /* igual ao seu */ }
