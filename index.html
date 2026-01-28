@@ -5,157 +5,24 @@
 <title>Sistema La Vie Bella</title>
 
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffd1dc">
 
 <style>
-body{
-font-family:Arial;
-background:#f6f6f6;
-margin:0;
-}
-
-/* TOPO */
-header{
-background:#ffd1dc;
-padding:20px;
-text-align:center;
-font-size:22px;
-font-weight:bold;
-color:#000;
-}
-
-/* MENU PRINCIPAL */
-.menu{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-padding:20px;
-}
-
-.menu button{
-background:#ffc0cb;
-border:none;
-padding:20px;
-font-size:18px;
-border-radius:12px;
-cursor:pointer;
-color:#000;
-}
-
-/* SEÇÕES */
-.section{
-display:none;
-background:#fff;
-margin:20px;
-padding:20px;
-border-radius:12px;
-}
-
-input, textarea{
-width:100%;
-padding:10px;
-margin:8px 0;
-}
-
-/* BOTÕES DE AÇÃO */
-.actions button{
-margin-right:10px;
-padding:10px 18px;
-background:#ffc0cb;
-border:none;
-border-radius:8px;
-cursor:pointer;
-color:#000;
-}
-
-/* LISTAS */
-.list{
-margin-top:20px;
-border-top:1px solid #ccc;
-}
-
-.item{
-padding:10px;
-border-bottom:1px solid #eee;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.item span{
-cursor:pointer;
-}
-
-.small{
-font-size:12px;
-color:#555;
-}
-
-.search{
-margin-bottom:10px;
-}
-
-/* MODAL */
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.6);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:1000;
-}
-
-.modal-content{
-background:#fff;
-width:520px;
-max-width:95%;
-max-height:90vh;
-display:flex;
-flex-direction:column;
-border-radius:12px;
-overflow:hidden;
-}
-
-/* CONTEÚDO MODAL */
-.modal-body{
-padding:20px;
-overflow-y:auto;
-flex:1;
-}
-
-.modal-body img{
-max-width:100%;
-margin-top:8px;
-border-radius:6px;
-}
-
-/* BOTÕES MODAL */
-.modal-actions{
-padding:12px;
-border-top:1px solid #ddd;
-display:flex;
-gap:10px;
-justify-content:flex-end;
-background:#fff;
-}
-
-.modal-actions button{
-padding:10px 16px;
-background:#ffc0cb;
-border:none;
-border-radius:8px;
-cursor:pointer;
-color:#000;
-}
+body{font-family:Arial;background:#f6f6f6;margin:0}
+header{background:#ffd1dc;padding:20px;text-align:center;font-size:22px;font-weight:bold}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:20px}
+.menu button{background:#ffc0cb;border:none;padding:20px;font-size:18px;border-radius:12px;cursor:pointer}
+.section{display:none;background:#fff;margin:20px;padding:20px;border-radius:12px}
+input,textarea{width:100%;padding:10px;margin:8px 0}
+.actions button{margin-right:10px;padding:10px 18px;background:#ffc0cb;border:none;border-radius:8px;cursor:pointer}
+.list{margin-top:20px;border-top:1px solid #ccc}
+.item{padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.item span{cursor:pointer}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal-content{background:#fff;padding:20px;border-radius:12px;width:520px;max-height:90vh;overflow:auto}
+img{max-width:100%;margin-top:8px;border-radius:6px}
+.search{margin-bottom:10px}
+.small{font-size:12px;color:#555}
 </style>
 </head>
 
@@ -173,36 +40,46 @@ color:#000;
 <button onclick="openModule('postados')">Postados</button>
 </div>
 
+<!-- INSTAGRAM FEED -->
 <div class="section" id="instagram_feed">
 <h2>Instagram Feed</h2>
+
 <input id="ig_feed_nome" placeholder="Nome do produto">
 <textarea id="ig_feed_desc" placeholder="Descrição"></textarea>
 <input type="file" id="ig_feed_fotos" multiple>
+
 <div class="actions">
 <button onclick="saveItem('ig_feed')">Salvar</button>
 <button onclick="clearForm('ig_feed')">Limpar</button>
 </div>
+
 <div class="list" id="list_ig_feed"></div>
 <button onclick="back()">Voltar</button>
 </div>
 
+<!-- INSTAGRAM STORIES -->
 <div class="section" id="instagram_stories">
 <h2>Instagram Stories</h2>
+
 <input id="ig_stories_nome" placeholder="Nome do produto">
 <input type="file" id="ig_stories_fotos" multiple>
+
 <div class="actions">
 <button onclick="saveItem('ig_stories')">Salvar</button>
 <button onclick="clearForm('ig_stories')">Limpar</button>
 </div>
+
 <div class="list" id="list_ig_stories"></div>
 <button onclick="back()">Voltar</button>
 </div>
 
+<!-- OUTROS -->
 <div class="section" id="facebook"><h2>Facebook</h2><div id="facebook_form"></div></div>
 <div class="section" id="tiktok"><h2>TikTok</h2><div id="tiktok_form"></div></div>
 <div class="section" id="shopee"><h2>Shopee</h2><div id="shopee_form"></div></div>
 <div class="section" id="whatsapp"><h2>WhatsApp</h2><div id="whatsapp_form"></div></div>
 
+<!-- POSTADOS -->
 <div class="section" id="postados">
 <h2>Postados</h2>
 <input class="search" placeholder="Buscar..." oninput="searchPostados(this.value)">
@@ -213,8 +90,6 @@ color:#000;
 <!-- MODAL -->
 <div class="modal" id="modal">
 <div class="modal-content">
-
-<div class="modal-body">
 <h3 id="m_nome"></h3>
 <button onclick="copyText(m_nome.innerText)">Copiar nome</button>
 
@@ -222,14 +97,12 @@ color:#000;
 <button onclick="copyText(m_desc.value)">Copiar descrição</button>
 
 <div id="m_fotos"></div>
-</div>
 
-<div class="modal-actions">
+<div class="actions">
 <button onclick="downloadFotos()">Baixar fotos</button>
 <button onclick="deleteItem()">Excluir</button>
 <button onclick="closeModal()">Fechar</button>
 </div>
-
 </div>
 </div>
 
@@ -270,50 +143,100 @@ return `
 document.getElementById(m+'_form').innerHTML=createForm(m)
 })
 
-/* FUNÇÃO QUE ESTAVA FALTANDO — NÃO ALTERA O RESTO */
-function saveItem(tipo){
-  const nome = document.getElementById(tipo+'_nome')?.value || ''
-  const desc = document.getElementById(tipo+'_desc')?.value || ''
-  const fotosInput = document.getElementById(tipo+'_fotos')
-  const fotos = fotosInput ? [...fotosInput.files].map(f=>f.name) : []
+function saveItem(k){
+let nome=document.getElementById(k+'_nome').value
+if(!nome) return
 
-  if(!nome && !desc && fotos.length === 0) return
+let descEl=document.getElementById(k+'_desc')
+let desc=descEl?descEl.value:''
 
-  db[tipo].push({
-    nome,
-    desc,
-    fotos,
-    criado_em: new Date().toISOString()
-  })
-
-  save()
-  clearForm(tipo)
+let fotos=[...document.getElementById(k+'_fotos').files].map(f=>URL.createObjectURL(f))
+db[k].push({nome,desc,fotos})
+save()
+clearForm(k)
 }
 
-function clearForm(tipo){
-if(document.getElementById(tipo+'_nome')) document.getElementById(tipo+'_nome').value=''
-if(document.getElementById(tipo+'_desc')) document.getElementById(tipo+'_desc').value=''
-if(document.getElementById(tipo+'_fotos')) document.getElementById(tipo+'_fotos').value=''
-}
-
-function save(){
-localStorage.setItem('db', JSON.stringify(db))
-render()
+function clearForm(k){
+['nome','desc','fotos'].forEach(f=>{
+let el=document.getElementById(k+'_'+f)
+if(el) el.value=''
+})
 }
 
 function render(){
-/* igual ao seu */
+Object.keys(db).forEach(k=>{
+let el=document.getElementById('list_'+k)
+if(!el) return
+el.innerHTML=''
+
+let items = k==='postados'
+? [...db.postados].sort((a,b)=>new Date(b.data)-new Date(a.data))
+: db[k]
+
+items.forEach((it,i)=>{
+el.innerHTML+=`
+<div class="item">
+<span onclick="openItem('${k}',${i})">${it.nome}</span>
+<div>
+${k!=='postados'
+? `<button onclick="toPostados('${k}',${i})">Postar</button>
+<button onclick="removeDirect('${k}',${i})">Excluir</button>`
+: `<div class="small">${it.origem} • ${it.data}</div>
+<button onclick="openItem('postados',${i})">Visualizar</button>
+<button onclick="removeDirect('postados',${i})">Excluir</button>`}
+</div>
+</div>`
+})
+})
 }
 
-render()
-</script>
+function openItem(k,i){
+current={k,i}
+let it=db[k][i]
+m_nome.innerText=it.nome
+m_desc.value=it.desc||''
+m_fotos.innerHTML=(it.fotos||[]).map(f=>`<img src="${f}">`).join('')
+modal.style.display='flex'
+}
 
-<!-- SUPABASE (APENAS CARREGADO, NÃO USADO) -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://ksmbmldjtfgtrbozmdmw.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy'
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+function downloadFotos(){
+let it=db[current.k][current.i]
+it.fotos.forEach((f,i)=>{
+let a=document.createElement('a')
+a.href=f
+a.download=`foto_${i+1}.jpg`
+a.click()
+})
+}
+
+function deleteItem(){
+db[current.k].splice(current.i,1)
+save()
+closeModal()
+}
+
+function removeDirect(k,i){
+db[k].splice(i,1)
+save()
+}
+
+function toPostados(k,i){
+let it=db[k][i]
+db.postados.push({...it,origem:k,data:new Date().toLocaleString()})
+db[k].splice(i,1)
+save()
+}
+
+function searchPostados(v){
+[...list_postados.children].forEach(i=>{
+i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none'
+})
+}
+
+function copyText(t){navigator.clipboard.writeText(t)}
+function closeModal(){modal.style.display='none'}
+function save(){localStorage.setItem('db',JSON.stringify(db));render()}
+render()
 </script>
 
 </body>
