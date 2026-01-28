@@ -98,7 +98,17 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const SUPABASE_URL = "https://ksmbmldjtfgtrbozmdmw.supabase.co"
+const SUPABASE_KEY = "sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy"
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+)
+
 let db = JSON.parse(localStorage.getItem('db')) || {
 ig_feed:[], ig_stories:[],
 facebook:[], tiktok:[], shopee:[], whatsapp:[],
@@ -144,6 +154,18 @@ fr.readAsDataURL(f)
 }))
 }
 
+async function salvarNoSupabase(modulo,item){
+await supabaseClient
+.from('itens')
+.insert([{
+modulo: modulo,
+nome: item.nome,
+descricao: item.desc || '',
+fotos: item.fotos || [],
+data: new Date().toISOString()
+}])
+}
+
 async function saveItem(k){
 let nome=document.getElementById(k+'_nome').value
 if(!nome) return
@@ -152,6 +174,7 @@ let desc=descEl?descEl.value:''
 let fotosInput=document.getElementById(k+'_fotos')
 let fotos=fotosInput?await filesToBase64(fotosInput.files):[]
 db[k].push({nome,desc,fotos})
+salvarNoSupabase(k,{nome,desc,fotos})
 save()
 clearForm(k)
 }
