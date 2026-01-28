@@ -40,46 +40,36 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <button onclick="openModule('postados')">Postados</button>
 </div>
 
-<!-- INSTAGRAM FEED -->
 <div class="section" id="instagram_feed">
 <h2>Instagram Feed</h2>
-
 <input id="ig_feed_nome" placeholder="Nome do produto">
 <textarea id="ig_feed_desc" placeholder="Descrição"></textarea>
 <input type="file" id="ig_feed_fotos" multiple>
-
 <div class="actions">
 <button onclick="saveItem('ig_feed')">Salvar</button>
 <button onclick="clearForm('ig_feed')">Limpar</button>
 </div>
-
 <div class="list" id="list_ig_feed"></div>
 <button onclick="back()">Voltar</button>
 </div>
 
-<!-- INSTAGRAM STORIES -->
 <div class="section" id="instagram_stories">
 <h2>Instagram Stories</h2>
-
 <input id="ig_stories_nome" placeholder="Nome do produto">
 <input type="file" id="ig_stories_fotos" multiple>
-
 <div class="actions">
 <button onclick="saveItem('ig_stories')">Salvar</button>
 <button onclick="clearForm('ig_stories')">Limpar</button>
 </div>
-
 <div class="list" id="list_ig_stories"></div>
 <button onclick="back()">Voltar</button>
 </div>
 
-<!-- OUTROS -->
 <div class="section" id="facebook"><h2>Facebook</h2><div id="facebook_form"></div></div>
 <div class="section" id="tiktok"><h2>TikTok</h2><div id="tiktok_form"></div></div>
 <div class="section" id="shopee"><h2>Shopee</h2><div id="shopee_form"></div></div>
 <div class="section" id="whatsapp"><h2>WhatsApp</h2><div id="whatsapp_form"></div></div>
 
-<!-- POSTADOS -->
 <div class="section" id="postados">
 <h2>Postados</h2>
 <input class="search" placeholder="Buscar..." oninput="searchPostados(this.value)">
@@ -87,17 +77,13 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <button onclick="back()">Voltar</button>
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="modal">
 <div class="modal-content">
 <h3 id="m_nome"></h3>
 <button onclick="copyText(m_nome.innerText)">Copiar nome</button>
-
 <textarea id="m_desc" readonly></textarea>
 <button onclick="copyText(m_desc.value)">Copiar descrição</button>
-
 <div id="m_fotos"></div>
-
 <div class="actions">
 <button onclick="downloadFotos()">Baixar fotos</button>
 <button onclick="deleteItem()">Excluir</button>
