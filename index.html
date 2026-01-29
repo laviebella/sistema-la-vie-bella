@@ -139,9 +139,7 @@ localStorage.setItem('db', JSON.stringify(db))
 render()
 }
 
-if(!localStorage.getItem('db')){
 carregarDoSupabase()
-}
 
 function openModule(id){
 document.querySelectorAll('.section').forEach(s=>s.style.display='none')
@@ -253,3 +251,4 @@ render()
 
 </body>
 </html>
+
