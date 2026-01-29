@@ -108,12 +108,15 @@ const supabase = supabase.createClient(
   SUPABASE_KEY
 )
 
-let db = JSON.parse(localStorage.getItem('db')) || {
-  ig_feed:[], ig_stories:[],
-  facebook:[], tiktok:[], shopee:[], whatsapp:[],
+let db = {
+  ig_feed:[],
+  ig_stories:[],
+  facebook:[],
+  tiktok:[],
+  shopee:[],
+  whatsapp:[],
   postados:[]
 }
-
 let current=null
 
 function openModule(id){
@@ -241,11 +244,35 @@ i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none
 
 function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
-function save(){localStorage.setItem('db',JSON.stringify(db));render()}
+async function save(){
+  await supabase
+    .from('dados')
+    .upsert({
+      uid: 'global',
+      conteudo: db
+    })
+  render()
+}
+
+async function load(){
+  const { data } = await supabase
+    .from('dados')
+    .select('conteudo')
+    .eq('uid','global')
+    .single()
+
+  if(data?.conteudo){
+    db = data.conteudo
+  }
+  render()
+}
+
+load()
 render()
 </script>
 
 </body>
 </html>
+
 
 
