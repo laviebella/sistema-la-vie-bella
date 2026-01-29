@@ -251,28 +251,14 @@ async function save(){
       uid: 'global',
       conteudo: db
     })
+
   render()
 }
-
-async function load(){
-  const { data } = await supabase
-    .from('dados')
-    .select('conteudo')
-    .eq('uid','global')
-    .single()
-
-  if(data?.conteudo){
-    db = data.conteudo
-  }
-  render()
-}
-
-load()
-render()
 </script>
 
 </body>
 </html>
+
 
 
 
