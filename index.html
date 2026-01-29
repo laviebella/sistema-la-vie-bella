@@ -92,7 +92,6 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <div id="m_fotos"></div>
 <div class="actions">
 <button onclick="downloadFotos()">Baixar fotos</button>
-<button onclick="postarItem()">Postar</button>
 <button onclick="deleteItem()">Excluir</button>
 <button onclick="closeModal()">Fechar</button>
 </div>
@@ -104,43 +103,13 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <script>
 const SUPABASE_URL = "https://ksmbmldjtfgtrbozmdmw.supabase.co"
 const SUPABASE_KEY = "sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy"
-
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let db = JSON.parse(localStorage.getItem('db')) || {
-ig_feed:[], ig_stories:[],
-facebook:[], tiktok:[], shopee:[], whatsapp:[],
-postados:[]
+ig_feed:[], ig_stories:[], facebook:[], tiktok:[], shopee:[], whatsapp:[], postados:[]
 }
 
 let current=null
-
-async function carregarDoSupabase(){
-let { data } = await supabaseClient.from('itens').select('*')
-if(!data || data.length===0) return
-
-let novoDb = {
-ig_feed:[], ig_stories:[],
-facebook:[], tiktok:[], shopee:[], whatsapp:[],
-postados:[]
-}
-
-data.forEach(it=>{
-if(novoDb[it.modulo]){
-novoDb[it.modulo].push({
-nome: it.nome,
-desc: it.descricao,
-fotos: it.fotos || []
-})
-}
-})
-
-db = novoDb
-localStorage.setItem('db', JSON.stringify(db))
-render()
-}
-
-carregarDoSupabase()
 
 function openModule(id){
 document.querySelectorAll('.section').forEach(s=>s.style.display='none')
@@ -152,61 +121,9 @@ function back(){
 document.querySelectorAll('.section').forEach(s=>s.style.display='none')
 }
 
-function createForm(id){
-return `
-<input id="${id}_nome" placeholder="Nome do produto">
-<textarea id="${id}_desc" placeholder="Descrição"></textarea>
-<input type="file" id="${id}_fotos" multiple>
-<div class="actions">
-<button onclick="saveItem('${id}')">Salvar</button>
-<button onclick="clearForm('${id}')">Limpar</button>
-</div>
-<div class="list" id="list_${id}"></div>
-<button onclick="back()">Voltar</button>`
-}
-
-;['facebook','tiktok','shopee','whatsapp'].forEach(m=>{
-document.getElementById(m+'_form').innerHTML=createForm(m)
-})
-
-function filesToBase64(files){
-return Promise.all([...files].map(f=>{
-return new Promise(r=>{
-let fr=new FileReader()
-fr.onload=()=>r(fr.result)
-fr.readAsDataURL(f)
-})
-}))
-}
-
-async function salvarNoSupabase(modulo,item){
-await supabaseClient.from('itens').insert([{
-modulo: modulo,
-nome: item.nome,
-descricao: item.desc || '',
-fotos: item.fotos || [],
-data: new Date().toISOString()
-}])
-}
-
-async function saveItem(k){
-let nome=document.getElementById(k+'_nome').value
-if(!nome) return
-let descEl=document.getElementById(k+'_desc')
-let desc=descEl?descEl.value:''
-let fotosInput=document.getElementById(k+'_fotos')
-let fotos=fotosInput?await filesToBase64(fotosInput.files):[]
-db[k].push({nome,desc,fotos})
-salvarNoSupabase(k,{nome,desc,fotos})
-save()
-clearForm(k)
-}
-
-function clearForm(k){
-['nome','desc','fotos'].forEach(f=>{
-let el=document.getElementById(k+'_'+f)
-if(el) el.value=''
-})
+function save(){
+localStorage.setItem('db',JSON.stringify(db))
+render()
 }
 
 function render(){
@@ -218,10 +135,26 @@ db[k].forEach((it,i)=>{
 el.innerHTML+=`
 <div class="item">
 <span onclick="openItem('${k}',${i})">${it.nome}</span>
-<button onclick="removeDirect('${k}',${i})">Excluir</button>
+<div>
+${k!=='postados'
+?`<button onclick="toPostados('${k}',${i})">Postar</button>
+<button onclick="removeDirect('${k}',${i})">Excluir</button>`
+:`<button onclick="removeDirect('postados',${i})">Excluir</button>`}
+</div>
 </div>`
 })
 })
+}
+
+function toPostados(k,i){
+let it=db[k][i]
+db.postados.push({
+...it,
+origem:k,
+data:new Date().toLocaleString()
+})
+db[k].splice(i,1)
+save()
 }
 
 function openItem(k,i){
@@ -231,15 +164,6 @@ m_nome.innerText=it.nome
 m_desc.value=it.desc||''
 m_fotos.innerHTML=(it.fotos||[]).map(f=>`<img src="${f}">`).join('')
 modal.style.display='flex'
-}
-
-function postarItem(){
-let item = db[current.k][current.i]
-db.postados.push(item)
-db[current.k].splice(current.i,1)
-save()
-closeModal()
-openModule('postados')
 }
 
 function deleteItem(){
@@ -255,7 +179,6 @@ save()
 
 function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
-function save(){localStorage.setItem('db',JSON.stringify(db));render()}
 render()
 </script>
 
