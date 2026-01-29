@@ -98,25 +98,13 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const SUPABASE_URL = 'https://ksmbmldjtfgtrbozmdmw.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy'
-const supabase = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-)
-
-let db = {
-  ig_feed:[],
-  ig_stories:[],
-  facebook:[],
-  tiktok:[],
-  shopee:[],
-  whatsapp:[],
-  postados:[]
+let db = JSON.parse(localStorage.getItem('db')) || {
+ig_feed:[], ig_stories:[],
+facebook:[], tiktok:[], shopee:[], whatsapp:[],
+postados:[]
 }
+
 let current=null
 
 function openModule(id){
@@ -244,20 +232,13 @@ i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none
 
 function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
-async function save(){
-  await supabase
-    .from('dados')
-    .upsert({
-      uid: 'global',
-      conteudo: db
-    })
-
-  render()
-}
+function save(){localStorage.setItem('db',JSON.stringify(db));render()}
+render()
 </script>
 
 </body>
 </html>
+
 
 
 
