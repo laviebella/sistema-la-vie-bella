@@ -98,11 +98,20 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const SUPABASE_URL = 'https://ksmbmldjtfgtrbozmdmw.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy'
+const supabase = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+)
+
 let db = JSON.parse(localStorage.getItem('db')) || {
-ig_feed:[], ig_stories:[],
-facebook:[], tiktok:[], shopee:[], whatsapp:[],
-postados:[]
+  ig_feed:[], ig_stories:[],
+  facebook:[], tiktok:[], shopee:[], whatsapp:[],
+  postados:[]
 }
 
 let current=null
@@ -238,4 +247,5 @@ render()
 
 </body>
 </html>
+
 
