@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Sistema La Vie Bella</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ffd1dc">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="La Vie Bella">
-
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 
@@ -92,6 +90,7 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <div id="m_fotos"></div>
 <div class="actions">
 <button onclick="downloadFotos()">Baixar fotos</button>
+<button onclick="postarItem()">Postar</button>
 <button onclick="deleteItem()">Excluir</button>
 <button onclick="closeModal()">Fechar</button>
 </div>
@@ -106,7 +105,8 @@ const SUPABASE_KEY = "sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy"
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let db = JSON.parse(localStorage.getItem('db')) || {
-ig_feed:[], ig_stories:[], facebook:[], tiktok:[], shopee:[], whatsapp:[], postados:[]
+ig_feed:[], ig_stories:[], facebook:[], tiktok:[],
+shopee:[], whatsapp:[], postados:[]
 }
 
 let current=null
@@ -121,10 +121,7 @@ function back(){
 document.querySelectorAll('.section').forEach(s=>s.style.display='none')
 }
 
-function save(){
-localStorage.setItem('db',JSON.stringify(db))
-render()
-}
+function save(){localStorage.setItem('db',JSON.stringify(db));render()}
 
 function render(){
 Object.keys(db).forEach(k=>{
@@ -135,25 +132,10 @@ db[k].forEach((it,i)=>{
 el.innerHTML+=`
 <div class="item">
 <span onclick="openItem('${k}',${i})">${it.nome}</span>
-<div>
-${k!=='postados'
-?`<button onclick="toPostados('${k}',${i})">Postar</button>
-<button onclick="removeDirect('${k}',${i})">Excluir</button>`
-:`<button onclick="removeDirect('postados',${i})">Excluir</button>`}
-</div>
+<button onclick="removeDirect('${k}',${i})">Excluir</button>
 </div>`
 })
-}
-
-function toPostados(k,i){
-let it=db[k][i]
-db.postados.push({
-...it,
-origem:k,
-data:new Date().toLocaleString()
 })
-db[k].splice(i,1)
-save()
 }
 
 function openItem(k,i){
@@ -163,6 +145,15 @@ m_nome.innerText=it.nome
 m_desc.value=it.desc||''
 m_fotos.innerHTML=(it.fotos||[]).map(f=>`<img src="${f}">`).join('')
 modal.style.display='flex'
+}
+
+function postarItem(){
+let item=db[current.k][current.i]
+db.postados.push(item)
+db[current.k].splice(current.i,1)
+save()
+closeModal()
+openModule('postados')
 }
 
 function deleteItem(){
@@ -176,8 +167,9 @@ db[k].splice(i,1)
 save()
 }
 
-function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
+function copyText(t){navigator.clipboard.writeText(t)}
+
 render()
 </script>
 
