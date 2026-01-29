@@ -92,6 +92,7 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <div id="m_fotos"></div>
 <div class="actions">
 <button onclick="downloadFotos()">Baixar fotos</button>
+<button onclick="postarItem()">Postar</button>
 <button onclick="deleteItem()">Excluir</button>
 <button onclick="closeModal()">Fechar</button>
 </div>
@@ -232,6 +233,15 @@ m_fotos.innerHTML=(it.fotos||[]).map(f=>`<img src="${f}">`).join('')
 modal.style.display='flex'
 }
 
+function postarItem(){
+let item = db[current.k][current.i]
+db.postados.push(item)
+db[current.k].splice(current.i,1)
+save()
+closeModal()
+openModule('postados')
+}
+
 function deleteItem(){
 db[current.k].splice(current.i,1)
 save()
@@ -251,4 +261,3 @@ render()
 
 </body>
 </html>
-
