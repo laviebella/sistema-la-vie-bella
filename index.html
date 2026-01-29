@@ -242,17 +242,17 @@ function save(){localStorage.setItem('db',JSON.stringify(db));render()}
 const SUPABASE_URL = 'https://ksmbmldjtfgtrbozmdmw.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy'
 
-const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY)
+const supa = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 async function syncToCloud(){
 try{
-await supabase.from('dados').update({conteudo:db}).eq('uid','global')
+await supa.from('dados').update({conteudo:db}).eq('uid','global')
 }catch(e){}
 }
 
 async function loadFromCloud(){
 try{
-const {data}=await supabase.from('dados').select('conteudo').eq('uid','global').single()
+const {data}=await supa.from('dados').select('conteudo').eq('uid','global').single()
 if(data&&data.conteudo){
 db=data.conteudo
 localStorage.setItem('db',JSON.stringify(db))
@@ -267,7 +267,7 @@ originalSave()
 syncToCloud()
 }
 
-supabase.channel('sync-db')
+supa.channel('sync-db')
 .on('postgres_changes',{event:'UPDATE',schema:'public',table:'dados'},payload=>{
 if(payload.new?.conteudo){
 db=payload.new.conteudo
