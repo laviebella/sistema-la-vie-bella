@@ -119,7 +119,6 @@ const supabaseClient = window.supabase.createClient(
 const DB_ID = 'sistema_principal'
 // ================================================================
 
-
 // ================= BANCO BASE =================
 let db = {
 ig_feed:[], ig_stories:[],
@@ -127,7 +126,6 @@ facebook:[], tiktok:[], shopee:[], whatsapp:[],
 postados:[]
 }
 // =============================================
-
 
 // ================= CARREGAR DO SUPABASE =================
 async function loadDB(){
@@ -149,17 +147,24 @@ async function loadDB(){
 
   render()
 }
-loadDB()
-// =======================================================
-
+async function init(){
+  await supabaseClient.auth.signInAnonymously()
+  await loadDB()
+}
+init()// =======================================================
 
 // ================= REALTIME =================
 supabaseClient
   .channel('realtime_db')
-  .on('postgres_changes',
-    { event: 'UPDATE', schema: 'public', table: 'sistema_db' },
+  .on(
+    'postgres_changes',
+    {
+      event: '*', // <<< ESCUTA TUDO
+      schema: 'public',
+      table: 'sistema_db'
+    },
     payload => {
-      if(payload.new.id === DB_ID){
+      if (payload.new && payload.new.id === DB_ID) {
         db = payload.new.data
         render()
       }
@@ -167,7 +172,6 @@ supabaseClient
   )
   .subscribe()
 // ============================================
-
 
 // ================= SEU SISTEMA ORIGINAL (INALTERADO) =================
 
@@ -314,6 +318,7 @@ async function save(){
 
 </body>
 </html>
+
 
 
 
