@@ -13,7 +13,8 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ✅ SUPABASE CORRIGIDO (VERSÃO UMD) -->
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 <style>
 body{font-family:Arial;background:#f6f6f6;margin:0}
@@ -48,6 +49,7 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <button onclick="openModule('postados')">Postados</button>
 </div>
 
+<!-- TODO O RESTANTE DO SEU CÓDIGO CONTINUA EXATAMENTE IGUAL -->
 <div class="section" id="instagram_feed">
 <h2>Instagram Feed</h2>
 <input id="ig_feed_nome" placeholder="Nome do produto">
@@ -313,6 +315,7 @@ async function save(){
 
 </body>
 </html>
+
 
 
 
