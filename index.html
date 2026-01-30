@@ -49,8 +49,6 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 <button onclick="openModule('postados')">Postados</button>
 </div>
 
-<!-- TODO O RESTO DO SEU SISTEMA PERMANECE 100% IGUAL -->
-<!-- TODO O RESTANTE DO SEU CÓDIGO CONTINUA EXATAMENTE IGUAL -->
 <div class="section" id="instagram_feed">
 <h2>Instagram Feed</h2>
 <input id="ig_feed_nome" placeholder="Nome do produto">
@@ -105,8 +103,8 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 
 <script>
 
-// ================= SUPABASE =================
-const supabase = window.supabase.createClient(
+// ================= SUPABASE (CORRIGIDO DEFINITIVO) =================
+const supabaseClient = window.supabase.createClient(
   'https://ksmbmldjtfgtrbozmdmw.supabase.co',
   'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy',
   {
@@ -119,7 +117,7 @@ const supabase = window.supabase.createClient(
 )
 
 const DB_ID = 'sistema_principal'
-// ===========================================
+// ================================================================
 
 
 // ================= BANCO BASE =================
@@ -133,7 +131,7 @@ postados:[]
 
 // ================= CARREGAR DO SUPABASE =================
 async function loadDB(){
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from('sistema_db')
     .select('*')
     .eq('id', DB_ID)
@@ -142,7 +140,7 @@ async function loadDB(){
   if(data && data.data){
     db = data.data
   } else {
-    await supabase.from('sistema_db').insert({
+    await supabaseClient.from('sistema_db').insert({
       id: DB_ID,
       data: db,
       updated_at: new Date()
@@ -156,7 +154,7 @@ loadDB()
 
 
 // ================= REALTIME =================
-supabase
+supabaseClient
   .channel('realtime_db')
   .on('postgres_changes',
     { event: 'UPDATE', schema: 'public', table: 'sistema_db' },
@@ -302,7 +300,7 @@ function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
 
 async function save(){
-  await supabase
+  await supabaseClient
     .from('sistema_db')
     .upsert({
       id: DB_ID,
@@ -316,6 +314,7 @@ async function save(){
 
 </body>
 </html>
+
 
 
 
