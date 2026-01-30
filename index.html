@@ -13,6 +13,8 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 body{font-family:Arial;background:#f6f6f6;margin:0}
 header{background:#ffd1dc;padding:20px;text-align:center;font-size:22px;font-weight:bold}
@@ -99,11 +101,67 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 </div>
 
 <script>
-let db = JSON.parse(localStorage.getItem('db')) || {
+
+// ================= SUPABASE =================
+const supabase = window.supabase.createClient(
+  'https://ksmbmldjtfgtrbozmdmw.supabase.co',
+  'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy'
+)
+
+const DB_ID = 'sistema_principal'
+// ===========================================
+
+
+// ================= BANCO BASE =================
+let db = {
 ig_feed:[], ig_stories:[],
 facebook:[], tiktok:[], shopee:[], whatsapp:[],
 postados:[]
 }
+// =============================================
+
+
+// ================= CARREGAR DO SUPABASE =================
+async function loadDB(){
+  const { data } = await supabase
+    .from('sistema_db')
+    .select('*')
+    .eq('id', DB_ID)
+    .single()
+
+  if(data && data.data){
+    db = data.data
+  } else {
+    await supabase.from('sistema_db').insert({
+      id: DB_ID,
+      data: db,
+      updated_at: new Date()
+    })
+  }
+
+  render()
+}
+loadDB()
+// =======================================================
+
+
+// ================= REALTIME =================
+supabase
+  .channel('realtime_db')
+  .on('postgres_changes',
+    { event: 'UPDATE', schema: 'public', table: 'sistema_db' },
+    payload => {
+      if(payload.new.id === DB_ID){
+        db = payload.new.data
+        render()
+      }
+    }
+  )
+  .subscribe()
+// ============================================
+
+
+// ================= SEU SISTEMA ORIGINAL (INALTERADO) =================
 
 let current=null
 
@@ -232,12 +290,23 @@ i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none
 
 function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
-function save(){localStorage.setItem('db',JSON.stringify(db));render()}
-render()
+
+async function save(){
+  await supabase
+    .from('sistema_db')
+    .upsert({
+      id: DB_ID,
+      data: db,
+      updated_at: new Date()
+    })
+  render()
+}
+
 </script>
 
 </body>
 </html>
+
 
 
 
