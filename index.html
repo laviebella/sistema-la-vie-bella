@@ -13,9 +13,6 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 
-<!-- SUPABASE UMD OFICIAL -->
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
 <style>
 body{font-family:Arial;background:#f6f6f6;margin:0}
 header{background:#ffd1dc;padding:20px;text-align:center;font-size:22px;font-weight:bold}
@@ -102,78 +99,11 @@ img{max-width:100%;margin-top:8px;border-radius:6px}
 </div>
 
 <script>
-
-// ================= SUPABASE (CORRIGIDO DEFINITIVO) =================
-const supabaseClient = window.supabase.createClient(
-  'https://ksmbmldjtfgtrbozmdmw.supabase.co',
-  'sb_publishable_dlxA713pDtE3VGGaG-0GJg_FsdanUYy',
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false
-    }
-  }
-)
-
-const DB_ID = 'sistema_principal'
-// ================================================================
-
-// ================= BANCO BASE =================
-let db = {
+let db = JSON.parse(localStorage.getItem('db')) || {
 ig_feed:[], ig_stories:[],
 facebook:[], tiktok:[], shopee:[], whatsapp:[],
 postados:[]
 }
-// =============================================
-
-// ================= CARREGAR DO SUPABASE =================
-async function loadDB(){
-  const { data } = await supabaseClient
-    .from('sistema_db')
-    .select('*')
-    .eq('id', DB_ID)
-    .single()
-
-  if(data && data.data){
-    db = data.data
-  } else {
-    await supabaseClient.from('sistema_db').insert({
-      id: DB_ID,
-      data: db,
-      updated_at: new Date()
-    })
-  }
-
-  render()
-}
-async function init(){
-  await supabaseClient.auth.signInAnonymously()
-  await loadDB()
-}
-init()// =======================================================
-
-// ================= REALTIME =================
-supabaseClient
-  .channel('realtime_db')
-  .on(
-    'postgres_changes',
-    {
-      event: '*', // <<< ESCUTA TUDO
-      schema: 'public',
-      table: 'sistema_db'
-    },
-    payload => {
-      if (payload.new && payload.new.id === DB_ID) {
-        db = payload.new.data
-        render()
-      }
-    }
-  )
-  .subscribe()
-// ============================================
-
-// ================= SEU SISTEMA ORIGINAL (INALTERADO) =================
 
 let current=null
 
@@ -302,22 +232,13 @@ i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none
 
 function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
-
-async function save(){
-  await supabaseClient
-    .from('sistema_db')
-    .upsert({
-      id: DB_ID,
-      data: db,
-      updated_at: new Date()
-    })
-  render()
-}
-
+function save(){localStorage.setItem('db',JSON.stringify(db));render()}
+render()
 </script>
 
 </body>
 </html>
+
 
 
 
