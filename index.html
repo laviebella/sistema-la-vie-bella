@@ -106,17 +106,14 @@ postados:[]
 }
 
 let current=null
-let activeModule=null
 
 function openModule(id){
-activeModule=id
 document.querySelectorAll('.section').forEach(s=>s.style.display='none')
 document.getElementById(id).style.display='block'
-renderActive()
+render()
 }
 
 function back(){
-activeModule=null
 document.querySelectorAll('.section').forEach(s=>s.style.display='none')
 }
 
@@ -150,16 +147,13 @@ fr.readAsDataURL(f)
 async function saveItem(k){
 let nome=document.getElementById(k+'_nome').value
 if(!nome) return
-
 let descEl=document.getElementById(k+'_desc')
 let desc=descEl?descEl.value:''
 let fotosInput=document.getElementById(k+'_fotos')
 let fotos=fotosInput?await filesToBase64(fotosInput.files):[]
-
 db[k].push({nome,desc,fotos})
-localStorage.setItem('db',JSON.stringify(db))
+save()
 clearForm(k)
-renderActive()
 }
 
 function clearForm(k){
@@ -169,33 +163,27 @@ if(el) el.value=''
 })
 }
 
-function renderActive(){
-if(!activeModule) return
-let el=document.getElementById('list_'+activeModule)
+function render(){
+Object.keys(db).forEach(k=>{
+let el=document.getElementById('list_'+k)
 if(!el) return
-
-// força repaint SEM quebrar inputs/botões
-el.offsetWidth
-
 el.innerHTML=''
-
-let items = activeModule==='postados'
+let items=k==='postados'
 ?[...db.postados].sort((a,b)=>new Date(b.data)-new Date(a.data))
-:db[activeModule]
-
+:db[k]
 items.forEach((it,i)=>{
 el.innerHTML+=`
 <div class="item">
-<span onclick="openItem('${activeModule}',${i})">${it.nome}</span>
+<span onclick="openItem('${k}',${i})">${it.nome}</span>
 <div>
-${activeModule!=='postados'
-?`<button onclick="toPostados('${activeModule}',${i})">Postar</button>
-<button onclick="removeDirect('${activeModule}',${i})">Excluir</button>`
+${k!=='postados'
+?`<button onclick="toPostados('${k}',${i})">Postar</button>
+<button onclick="removeDirect('${k}',${i})">Excluir</button>`
 :`<div class="small">${it.origem} • ${it.data}</div>
 <button onclick="openItem('postados',${i})">Visualizar</button>
 <button onclick="removeDirect('postados',${i})">Excluir</button>`}
 </div>
-</div>`
+</div>`})
 })
 }
 
@@ -220,23 +208,20 @@ a.click()
 
 function deleteItem(){
 db[current.k].splice(current.i,1)
-localStorage.setItem('db',JSON.stringify(db))
+save()
 closeModal()
-renderActive()
 }
 
 function removeDirect(k,i){
 db[k].splice(i,1)
-localStorage.setItem('db',JSON.stringify(db))
-renderActive()
+save()
 }
 
 function toPostados(k,i){
 let it=db[k][i]
 db.postados.push({...it,origem:k,data:new Date().toLocaleString()})
 db[k].splice(i,1)
-localStorage.setItem('db',JSON.stringify(db))
-renderActive()
+save()
 }
 
 function searchPostados(v){
@@ -247,6 +232,13 @@ i.style.display=i.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none
 
 function copyText(t){navigator.clipboard.writeText(t)}
 function closeModal(){modal.style.display='none'}
+
+function save(){
+localStorage.setItem('db',JSON.stringify(db))
+requestAnimationFrame(()=>render())
+}
+
+render()
 </script>
 
 </body>
