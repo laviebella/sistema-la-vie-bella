@@ -145,16 +145,22 @@ fr.readAsDataURL(f)
 }
 
 async function saveItem(k){
+document.activeElement && document.activeElement.blur()
+
 let nome=document.getElementById(k+'_nome').value
 if(!nome) return
+
 let descEl=document.getElementById(k+'_desc')
 let desc=descEl?descEl.value:''
+
 let fotosInput=document.getElementById(k+'_fotos')
 let fotos=fotosInput?await filesToBase64(fotosInput.files):[]
+
 db[k].push({nome,desc,fotos})
 save()
 setTimeout(()=>clearForm(k),0)
 }
+
 function clearForm(k){
 ['nome','desc','fotos'].forEach(f=>{
 let el=document.getElementById(k+'_'+f)
@@ -217,6 +223,8 @@ save()
 }
 
 function toPostados(k,i){
+document.activeElement && document.activeElement.blur()
+
 let it=db[k][i]
 db.postados.push({...it,origem:k,data:new Date().toLocaleString()})
 db[k].splice(i,1)
