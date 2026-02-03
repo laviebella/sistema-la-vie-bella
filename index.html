@@ -174,9 +174,8 @@ if(!activeModule) return
 let el=document.getElementById('list_'+activeModule)
 if(!el) return
 
-el.style.display='none'
-el.offsetHeight
-el.style.display='block'
+// força repaint SEM quebrar inputs/botões
+el.offsetWidth
 
 el.innerHTML=''
 
@@ -252,4 +251,3 @@ function closeModal(){modal.style.display='none'}
 
 </body>
 </html>
-
