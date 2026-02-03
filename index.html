@@ -153,9 +153,8 @@ let fotosInput=document.getElementById(k+'_fotos')
 let fotos=fotosInput?await filesToBase64(fotosInput.files):[]
 db[k].push({nome,desc,fotos})
 save()
-clearForm(k)
+setTimeout(()=>clearForm(k),0)
 }
-
 function clearForm(k){
 ['nome','desc','fotos'].forEach(f=>{
 let el=document.getElementById(k+'_'+f)
